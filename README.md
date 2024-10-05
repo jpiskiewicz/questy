@@ -27,4 +27,19 @@ to play around with.
 - [ ] Database for user data, quest info and session token lookup;
 - [ ] Authorization API;
 - [ ] Quest creation, start and modification endpoints;
-- [ ] WS endpoint for quest list with initial download and broadcast when any endpoints mentioned above get pinged.
+- [ ] Some broadcast service which will use SSE to notify all connected clients for current user about changes to the task list.
+
+## Database initalization
+
+Running MySQL without setting it up as a service on MacOS
+
+```bash
+/opt/homebrew/opt/mysql/bin/mysqld_safe --datadir\=/opt/homebrew/var/mysql
+```
+
+```sql
+CREATE DATABASE quests;
+USE quests;
+CREATE TABLE users (email VARCHAR(256) NOT NULL PRIMARY KEY, password VARCHAR(256) NOT NULL);
+CREATE TABLE tokens (user VARCHAR(256) NOT NULL PRIMARY KEY, value VARCHAR(36) NOT NULL, exp_date DATETIME NOT NULL);
+```

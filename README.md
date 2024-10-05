@@ -23,7 +23,7 @@ to play around with.
 
 ## TODO
 
-- [ ] Login page frontend;
+- [x] Login page frontend;
 - [ ] Database for user data, quest info and session token lookup;
 - [ ] Authorization API;
 - [ ] Quest creation, start and modification endpoints;

@@ -1,22 +1,57 @@
 import mysql from "mysql2/promise";
 
 class Db {
-  constructor(conn: mysql.Connection) {}
+  constructor(private conn: mysql.Connection) {}
 
   /* Checks whether the credentials are correct and returns
      new session token on success. */
-  login(email: string, password: string): string {}
+  async login(email: string, password: string): Promise<string | null> {
+    try {
+      const [results] = await this.conn.query(
+        `SELECT email FROM users WHERE email = "${email}" AND password = SHA2("${password}", 256);`
+      );
+      if (!results.length) return null;
+    } catch (_) {
+      return null;
+    }
+
+    try {
+      const res = await this.conn.query(
+        `
+        SET @value = UUID();
+        INSERT INTO tokens
+        VALUES ("${email}", @value, DATE_ADD(NOW(), INTERVAL 1 DAY));
+        SELECT @value;
+        `
+      );
+      return res[0][2][0]["@value"];
+    } catch (_) {
+      return null;
+    }
+
+    return null;
+  }
 
   /* Returns false if the user already exists */
-  register(email: string, password: string): boolean {}
+  async register(email: string, password: string): Promise<boolean> {
+    password = password.replaceAll('"', '\\"');
+    try {
+      await this.conn.query(`INSERT INTO users VALUES ("${email}", SHA2("${password}", 256));`);
+    } catch (_) {
+      return false;
+    }
+
+    return true;
+  }
 }
 
 const createConnection = async (): Promise<Db> => {
   const conn = await mysql.createConnection({
-    host: "http://localhost:3333",
-    user: "root",
+    host: "localhost",
+    user: "svelte",
     password: import.meta.env.VITE_DB_PASS,
-    database: "questy"
+    database: "quests",
+    multipleStatements: true
   });
 
   return new Db(conn);

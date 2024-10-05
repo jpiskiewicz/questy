@@ -1,4 +1,22 @@
+<script lang="ts">
+  import { slide } from "svelte/transition";
+
+  let { form } = $props();
+
+  let alert = $state(false);
+  $effect(() => {
+    if (form?.message) {
+      alert = true;
+      window.setTimeout(() => (alert = false), 5000);
+    }
+  });
+</script>
+
 <main>
+  <div class="alert {form?.success ? 'good' : 'bad'}" class:visible={alert}>
+    {form?.message}
+  </div>
+
   <h1>Dawaj, robimy z tego questa</h1>
   <form method="POST">
     <div class="fields">
@@ -13,7 +31,7 @@
     </div>
     <div class="buttons">
       <button class="secondary" formaction="?/register"> Zarejestruj się </button>
-      <button class="primary"> Zaloguj się </button>
+      <button class="primary" formaction="?/login"> Zaloguj się </button>
     </div>
   </form>
 </main>
@@ -26,6 +44,26 @@
     grid-template-rows: 52px max-content max-content;
     gap: 3rem;
     padding: 2rem 1rem;
+  }
+
+  .alert {
+    border: 1px solid $main;
+    border-radius: 0.25rem;
+    padding: 1rem 2rem;
+    transition: transform 0.5s ease-out;
+    transform: translateY(calc(0px - (2rem + 100%)));
+  }
+
+  .good {
+    background: $accent;
+  }
+
+  .bad {
+    background: $bad;
+  }
+
+  .visible {
+    transform: translateY(0);
   }
 
   h1 {

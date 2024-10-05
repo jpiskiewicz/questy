@@ -1,38 +1,30 @@
-# create-svelte
+# Dawaj, robimy z tego questa
 
-Everything you need to build a Svelte project, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/main/packages/create-svelte).
+This is a simple web app allows for adding time-based tasks.
 
-## Creating a project
+## Raison d'etre
 
-If you're seeing this, you've probably already done this step. Congrats!
+I wanted to create an interactive task list for myself that allows me to specify a time limit
+for each task and allows for only one active task at the time. I imagine that by gamifying
+the everyday process of tracking what needs to be done in a day I could rawdog my ADHD better.
 
-```bash
-# create a new project in the current directory
-npm create svelte@latest
+The other reason for this project's existence is rather simple. I wanted to write something
+from the ground-up in Svelte 5. Before creating this app I only transitioned one project from
+Svelte 4 to 5 and the new reactive programming paradigms introduced in 5 are really fun
+to play around with.
 
-# create a new project in my-app
-npm create svelte@latest my-app
-```
+## Features
 
-## Developing
+- Specify a quest with time budget;
+- Single click on a quest selects it. Selected quest can be edited or activated;
+- By activating the quest a timer is started;
+- The quest can be marked as completed before or after the time runs out;
+- There are user accounts. Quests are synced between session of a single user.
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## TODO
 
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-## Building
-
-To create a production version of your app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
+- [ ] Login page frontend;
+- [ ] Database for user data, quest info and session token lookup;
+- [ ] Authorization API;
+- [ ] Quest creation, start and modification endpoints;
+- [ ] WS endpoint for quest list with initial download and broadcast when any endpoints mentioned above get pinged.

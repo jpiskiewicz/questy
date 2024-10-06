@@ -44,6 +44,15 @@ CREATE DATABASE quests;
 USE quests;
 CREATE TABLE users (email VARCHAR(256) NOT NULL PRIMARY KEY, password VARCHAR(256) NOT NULL);
 CREATE TABLE tokens (user VARCHAR(256) NOT NULL, value VARCHAR(36) NOT NULL PRIMARY KEY, exp_date DATETIME NOT NULL);
+CREATE TABLE quests (
+  id INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+  user VARCHAR(256) NOT NULL,
+  type ENUM('main', 'side') NOT NULL,
+  title VARCHAR(256) NOT NULL,
+  description TEXT NOT NULL,
+  duration INTEGER NOT NULL,
+  status ENUM('created', 'started', 'finished') NOT NULL
+);
 CREATE USER 'svelte'@'localhost' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON quests.* TO 'svelte'@'localhost';
 ```

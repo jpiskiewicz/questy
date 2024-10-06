@@ -51,7 +51,8 @@ CREATE TABLE quests (
   title VARCHAR(256) NOT NULL,
   description TEXT NOT NULL,
   duration INTEGER NOT NULL,
-  status ENUM('created', 'started', 'finished') NOT NULL
+  status ENUM('created', 'started', 'finished') NOT NULL,
+  end_time DATETIME NOT NULL
 );
 CREATE USER 'svelte'@'localhost' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON quests.* TO 'svelte'@'localhost';

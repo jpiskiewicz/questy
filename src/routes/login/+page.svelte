@@ -95,8 +95,7 @@
     gap: 0.25rem;
   }
 
-  input,
-  .primary {
+  input {
     @include bordered;
   }
 
@@ -124,26 +123,10 @@
   }
 
   .primary {
-    &:hover {
-      background: $accent;
-    }
-
-    &:active {
-      background: $accent-active;
-    }
+    @include button-primary;
   }
 
   .secondary {
-    text-decoration: underline;
-    background: transparent;
-    border: 1px solid transparent;
-
-    &:hover {
-      font-weight: 700;
-    }
-
-    &:active {
-      color: $accent-active;
-    }
+    @include button-minimal;
   }
 </style>

@@ -1,5 +1,5 @@
 import type { Actions } from "./$types";
-import { fail } from "@sveltejs/kit";
+import { fail, redirect } from "@sveltejs/kit";
 
 export const actions = {
   login: async ({ request, locals, cookies }) => {
@@ -13,7 +13,7 @@ export const actions = {
     cookies.set("token", token, { path: "/" });
     cookies.set("username", <string>email, { path: "/" });
 
-    return { success: true };
+    return redirect(302, "/");
   },
   register: async ({ request, locals }) => {
     const data = await request.formData();

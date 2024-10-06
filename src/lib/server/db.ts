@@ -28,8 +28,10 @@ class Db {
     } catch (_) {
       return null;
     }
+  }
 
-    return null;
+  logout(token: string) {
+    this.conn.query(`DELETE FROM tokens WHERE value = "${token}";`);
   }
 
   /* Returns false if the user already exists */

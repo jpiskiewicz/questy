@@ -5,6 +5,7 @@ $bg: #fff;
 $accent: #d1ead0;
 $accent-active: #a7d9a6;
 $bad: #ead0d0;
+$on-ui-active: #e6e6e6;
 
 // Font configs
 @mixin hero {
@@ -13,9 +14,40 @@ $bad: #ead0d0;
   margin: 0;
 }
 
+@mixin button-text {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
 // Element styling
 @mixin bordered {
   border-radius: 0.25rem;
   border: 1px solid $main;
   background: $bg;
+}
+
+@mixin button-primary {
+  @include bordered;
+
+  &:hover {
+    background: $accent;
+  }
+
+  &:active {
+    background: $accent-active;
+  }
+}
+
+@mixin button-minimal {
+  text-decoration: underline;
+  background: transparent;
+  border: 1px solid transparent;
+
+  &:hover {
+    font-weight: 700;
+  }
+
+  &:active {
+    color: $accent-active;
+  }
 }

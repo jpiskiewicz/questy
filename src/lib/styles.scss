@@ -19,6 +19,11 @@ $on-ui-active: #e6e6e6;
   font-weight: 700;
 }
 
+@mixin section-name {
+  font-size: 36px;
+  font-weight: 700;
+}
+
 // Element styling
 @mixin bordered {
   border-radius: 0.25rem;
@@ -28,6 +33,7 @@ $on-ui-active: #e6e6e6;
 
 @mixin button-primary {
   @include bordered;
+  @include button-text;
 
   &:hover {
     background: $accent;
@@ -50,4 +56,10 @@ $on-ui-active: #e6e6e6;
   &:active {
     color: $accent-active;
   }
+}
+
+@mixin input {
+  height: 2rem;
+  padding: 0 0.5rem;
+  font-size: 1rem;
 }

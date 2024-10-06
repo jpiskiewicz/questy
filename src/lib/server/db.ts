@@ -45,6 +45,14 @@ class Db {
 
     return true;
   }
+
+  async createQuest(
+    token: string,
+    type: string,
+    title: string,
+    description: string,
+    time: string
+  ): Promise<boolean> {}
 }
 
 const createConnection = async (): Promise<Db> => {

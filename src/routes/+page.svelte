@@ -1,4 +1,6 @@
 <script lang="ts">
+  import QuestCreateForm from "$lib/components/QuestCreateForm.svelte";
+
   let { data } = $props();
 
   let sessionControlOpen = $state(false);
@@ -38,6 +40,9 @@
     </svg>
   </button>
 </main>
+{#if questCreateFormOpen}
+  <QuestCreateForm bind:isOpened={questCreateFormOpen} />
+{/if}
 
 <style lang="scss">
   @import "$lib/styles";

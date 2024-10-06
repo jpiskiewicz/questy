@@ -44,6 +44,6 @@ CREATE DATABASE quests;
 USE quests;
 CREATE TABLE users (email VARCHAR(256) NOT NULL PRIMARY KEY, password VARCHAR(256) NOT NULL);
 CREATE TABLE tokens (user VARCHAR(256) NOT NULL, value VARCHAR(36) NOT NULL PRIMARY KEY, exp_date DATETIME NOT NULL);
-CREATE USER 'svelte'@'localhost' IDENTIFIED BY 'password' DEFAULT ROLE application;
+CREATE USER 'svelte'@'localhost' IDENTIFIED BY 'password';
 GRANT ALL PRIVILEGES ON quests.* TO 'svelte'@'localhost';
 ```

@@ -2,6 +2,7 @@
   let { data } = $props();
 
   let sessionControlOpen = $state(false);
+  let questCreateFormOpen = $state(false);
   let sessionControlHolder: HTMLDivElement;
 
   const dismissSessionControl = ({ target }: MouseEvent) => {
@@ -28,7 +29,7 @@
       {/if}
     </div>
   </nav>
-  <button class="fab">
+  <button class="fab" onclick={() => (questCreateFormOpen = true)} aria-label="create new quest">
     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
         d="M18.6113 21.3888H8.33334V18.6113H18.6113V8.33337H21.3888V18.6113H31.6667V21.3888H21.3888V31.6667H18.6113V21.3888Z"

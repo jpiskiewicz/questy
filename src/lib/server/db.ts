@@ -46,13 +46,55 @@ class Db {
     return true;
   }
 
+  // Returns username corellated with the token
+  private async authenticate(token: string): Promise<string> {
+    try {
+      const [results] = await this.conn.query(
+        `SELECT username FROM tokens WHERE value = "${token}";`
+      );
+      if (results.length > 0) return results[0];
+    } catch (err) {
+      console.log(err);
+    }
+
+    return "";
+  }
+
+  private async performAuthenticatedAction(token: string, action: string): Promise<boolean> {
+    const username = await this.authenticate(token);
+    if (!username) {
+      return false;
+    }
+    try {
+      this.conn.query(action.replace("{user}", username));
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+    return true;
+  }
+
+  private getSeconds(duration: string): number {
+    const [hours, minutes] = duration.split(":").map(v => parseInt(v));
+    return hours * 3600 + minutes * 60;
+  }
+
   async createQuest(
     token: string,
     type: string,
     title: string,
     description: string,
     time: string
-  ): Promise<boolean> {}
+  ): Promise<boolean> {
+    return await this.performAuthenticatedAction(
+      token,
+      `
+      INSERT INTO quests
+        VALUES ("${type}", "${title}", "${description}", ${this.getSeconds(time)})
+        WHERE user == {user};
+      `
+    );
+  }
 }
 
 const createConnection = async (): Promise<Db> => {

@@ -1,4 +1,10 @@
+import type { Cookies } from "@sveltejs/kit";
 import mysql from "mysql2/promise";
+
+export enum QuestType {
+  main = "main",
+  side = "side"
+}
 
 class Db {
   constructor(private conn: mysql.Connection) {}
@@ -30,8 +36,10 @@ class Db {
     }
   }
 
-  logout(token: string) {
+  logout(token: string, cookies: Cookies) {
     this.conn.query(`DELETE FROM tokens WHERE value = "${token}";`);
+    cookies.delete("token", { path: "/" });
+    cookies.delete("username", { path: "/" });
   }
 
   /* Returns false if the user already exists */
@@ -49,10 +57,9 @@ class Db {
   // Returns username corellated with the token
   private async authenticate(token: string): Promise<string> {
     try {
-      const [results] = await this.conn.query(
-        `SELECT username FROM tokens WHERE value = "${token}";`
-      );
-      if (results.length > 0) return results[0];
+      await this.conn.query(`DELETE FROM tokens WHERE exp_date < NOW();`);
+      const [results] = await this.conn.query(`SELECT user FROM tokens WHERE value = "${token}";`);
+      if (results.length > 0) return results[0].user;
     } catch (err) {
       console.log(err);
     }
@@ -81,7 +88,7 @@ class Db {
 
   async createQuest(
     token: string,
-    type: string,
+    type: QuestType,
     title: string,
     description: string,
     time: string
@@ -89,9 +96,8 @@ class Db {
     return await this.performAuthenticatedAction(
       token,
       `
-      INSERT INTO quests
-        VALUES ("${type}", "${title}", "${description}", ${this.getSeconds(time)})
-        WHERE user == {user};
+      INSERT INTO quests (user, type, title, description, duration)
+        VALUES ("{user}", "${type}", "${title}", "${description}", ${this.getSeconds(time)});
       `
     );
   }

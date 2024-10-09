@@ -56,7 +56,7 @@
     </label>
     <label>
       Opis
-      <textarea name="description" rows="3" required></textarea>
+      <textarea name="description" rows="3"></textarea>
     </label>
     <label>
       Budżet czasowy

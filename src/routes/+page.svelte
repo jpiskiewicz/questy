@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onMount } from "svelte";
+  import { goto } from "$app/navigation";
   import QuestCreateForm from "$lib/components/QuestCreateForm.svelte";
 
   let { data } = $props();
@@ -12,6 +14,19 @@
       sessionControlOpen = false;
     }
   };
+
+  onMount(async () => {
+    const resp = await fetch("/api/stream");
+    if (!resp.ok) goto("/logout"); // Probably auth error
+    const reader = resp.body!.getReader();
+    const read = ({ value, done }) => {
+      if (!done) {
+        console.log(value);
+        return reader.read().then(read);
+      }
+    };
+    reader.read().then(read);
+  });
 </script>
 
 <main>

@@ -1,12 +1,46 @@
 import type { Cookies } from "@sveltejs/kit";
+import type { ResultSetHeader, RowDataPacket } from "mysql2/promise";
 import mysql from "mysql2/promise";
+import InvalidationStreams from "./InvalidationStreams";
 
 export enum QuestType {
   main = "main",
   side = "side"
 }
 
+enum QuestStatus {
+  created = "created",
+  started = "started",
+  finished = "finished"
+}
+
+interface Quest {
+  id: number;
+  user: string;
+  type: QuestType;
+  title: string;
+  description: string;
+  duration: number;
+  status: QuestStatus;
+  end_time: string;
+}
+
+interface AuthenticatedActionResultOk {
+  ok: true;
+  user: string;
+  data: ResultSetHeader | RowDataPacket;
+}
+
+interface AuthenticatedActionResultFail {
+  ok: false;
+  user: null;
+  data: null;
+}
+
+type AuthenticatedActionResult = AuthenticatedActionResultOk | AuthenticatedActionResultFail;
+
 class Db {
+  private streams = new InvalidationStreams();
   constructor(private conn: mysql.Connection) {}
 
   /* Checks whether the credentials are correct and returns
@@ -17,7 +51,8 @@ class Db {
         `SELECT email FROM users WHERE email = "${email}" AND password = SHA2("${password}", 256);`
       );
       if (!results.length) return null;
-    } catch (_) {
+    } catch (e) {
+      console.log(e);
       return null;
     }
 
@@ -36,8 +71,9 @@ class Db {
     }
   }
 
-  logout(token: string, cookies: Cookies) {
-    this.conn.query(`DELETE FROM tokens WHERE value = "${token}";`);
+  logout(cookies: Cookies) {
+    this.conn.query(`DELETE FROM tokens WHERE value = "${cookies.get("token")}";`);
+    this.streams.delete(cookies.get("username")!);
     cookies.delete("token", { path: "/" });
     cookies.delete("username", { path: "/" });
   }
@@ -67,18 +103,21 @@ class Db {
     return "";
   }
 
-  private async performAuthenticatedAction(token: string, action: string): Promise<boolean> {
+  private async performAuthenticatedAction(
+    token: string,
+    action: string
+  ): Promise<AuthenticatedActionResult> {
     const username = await this.authenticate(token);
     if (!username) {
-      return false;
+      return { ok: false, user: null, data: null };
     }
     try {
-      this.conn.query(action.replace("{user}", username));
+      const data = await this.conn.query(action.replace("{user}", username));
+      return { ok: true, user: username, data };
     } catch (err) {
       console.log(err);
-      return false;
+      return { ok: false, user: null, data: null };
     }
-    return true;
   }
 
   private getSeconds(duration: string): number {
@@ -93,13 +132,34 @@ class Db {
     description: string,
     time: string
   ): Promise<boolean> {
-    return await this.performAuthenticatedAction(
+    const res = await this.performAuthenticatedAction(
       token,
       `
       INSERT INTO quests (user, type, title, description, duration)
         VALUES ("{user}", "${type}", "${title}", "${description}", ${this.getSeconds(time)});
       `
     );
+    if (res.ok) this.streams.invalidate(res.user);
+    return res.ok;
+  }
+
+  async getQuests(token: string): Promise<Quest[] | null> {
+    const res = await this.performAuthenticatedAction(
+      token,
+      "SELECT * FROM quests WHERE user == {user};"
+    );
+    if (res.ok) {
+      return <Quest[]>(res.data as RowDataPacket)[0];
+    }
+
+    return null;
+  }
+
+  async getStream(token: string): Promise<ReadableStream | null> {
+    const user = await this.authenticate(token);
+    if (!user) return null;
+    this.streams.create(user);
+    return this.streams.getUserStream(user);
   }
 }
 

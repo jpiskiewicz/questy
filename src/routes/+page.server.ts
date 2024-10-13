@@ -2,13 +2,18 @@ import type { Actions, PageServerLoad } from "./$types";
 import { QuestType } from "$lib/server/db";
 import { redirect } from "@sveltejs/kit";
 
-export const load: PageServerLoad = ({ cookies }) => {
+export const load: PageServerLoad = ({ locals, cookies }) => {
   const token = cookies.get("token");
   if (token === undefined) {
     return redirect(302, "/login");
   }
 
-  return { username: cookies.get("username") };
+  const username = cookies.get("username");
+
+  return {
+    username,
+    invalidationStream: locals.db.getStream(username)
+  };
 };
 
 export const actions = {

@@ -24,6 +24,12 @@ $on-ui-active: #e6e6e6;
   font-weight: 700;
 }
 
+@mixin quest-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
 // Element styling
 @mixin bordered {
   border-radius: 0.25rem;

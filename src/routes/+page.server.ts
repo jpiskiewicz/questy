@@ -1,5 +1,5 @@
 import type { Actions, PageServerLoad } from "./$types";
-import { QuestType } from "$lib/server/db";
+import { QuestType } from "$lib/types";
 import { redirect } from "@sveltejs/kit";
 
 export const load: PageServerLoad = ({ locals, cookies }) => {

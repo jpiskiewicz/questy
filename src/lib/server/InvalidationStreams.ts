@@ -23,7 +23,6 @@ class InvalidationStreams {
   }
 
   invalidate(user: string) {
-    console.log(this.streams);
     const conn = this.streams.get(user)?.controller;
     conn?.enqueue("invalidate");
   }

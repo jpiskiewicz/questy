@@ -1,29 +1,8 @@
 import type { Cookies } from "@sveltejs/kit";
 import type { ResultSetHeader, RowDataPacket } from "mysql2/promise";
+import type { Quest, QuestType } from "$lib/types";
 import mysql from "mysql2/promise";
 import InvalidationStreams from "./InvalidationStreams";
-
-export enum QuestType {
-  main = "main",
-  side = "side"
-}
-
-enum QuestStatus {
-  created = "created",
-  started = "started",
-  finished = "finished"
-}
-
-interface Quest {
-  id: number;
-  user: string;
-  type: QuestType;
-  title: string;
-  description: string;
-  duration: number;
-  status: QuestStatus;
-  end_time: string;
-}
 
 interface AuthenticatedActionResultOk {
   ok: true;
@@ -146,7 +125,7 @@ class Db {
   async getQuests(token: string): Promise<Quest[] | null> {
     const res = await this.performAuthenticatedAction(
       token,
-      "SELECT * FROM quests WHERE user == {user};"
+      'SELECT * FROM quests WHERE user = "{user}";'
     );
     if (res.ok) {
       return <Quest[]>(res.data as RowDataPacket)[0];

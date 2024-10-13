@@ -1,12 +1,15 @@
 <script lang="ts">
+  import type { Quest } from "$lib/types";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
+  import QuestTile from "$lib/components/QuestTile.svelte";
   import QuestCreateForm from "$lib/components/QuestCreateForm.svelte";
 
   let { data } = $props();
 
   let sessionControlOpen = $state(false);
   let questCreateFormOpen = $state(false);
+  let quests: Quest[] = $state([]);
   let sessionControlHolder: HTMLDivElement;
 
   const dismissSessionControl = ({ target }: MouseEvent) => {
@@ -15,17 +18,43 @@
     }
   };
 
-  onMount(async () => {
-    const resp = await fetch("/api/stream");
-    if (!resp.ok) goto("/logout"); // Probably auth error
+  const performAuthenticatedRequest = async (url: string): Promise<Response | null> => {
+    try {
+      const resp = await fetch(url);
+      if (!resp.ok) goto("/logout"); // Probably auth error
+      return resp;
+    } catch (err) {
+      console.log(err);
+      goto("/logout");
+    }
+    return null;
+  };
+
+  const loadQuestList = async () => {
+    const resp = await performAuthenticatedRequest("/api/quests");
+    if (resp) {
+      quests = await resp.json();
+    }
+  };
+
+  const startQuestInvalidationHandler = async () => {
+    const resp = await performAuthenticatedRequest("/api/stream");
+    if (!resp) return;
     const reader = resp.body!.getReader();
-    const read = ({ value, done }) => {
+    const handleInvalidation = async ({
+      done
+    }: ReadableStreamReadResult<Uint8Array>): Promise<void> => {
       if (!done) {
-        console.log(value);
-        return reader.read().then(read);
+        const res = await reader.read();
+        handleInvalidation(res);
       }
     };
-    reader.read().then(read);
+    handleInvalidation(await reader.read());
+  };
+
+  onMount(() => {
+    loadQuestList();
+    startQuestInvalidationHandler();
   });
 </script>
 
@@ -46,6 +75,12 @@
       {/if}
     </div>
   </nav>
+  <h2>Questy główne</h2>
+  <div class="quests">
+    {#each quests as quest}
+      <QuestTile {quest} />
+    {/each}
+  </div>
   <button class="fab" onclick={() => (questCreateFormOpen = true)} aria-label="create new quest">
     <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
       <path
@@ -132,8 +167,14 @@
     justify-content: center;
   }
 
+  .quests {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+
   .fab {
-    position: absolute;
+    position: fixed;
     bottom: 2rem;
     right: 1rem;
     width: 4rem;

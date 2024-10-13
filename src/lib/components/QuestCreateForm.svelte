@@ -72,7 +72,7 @@
   @import "$lib/styles";
 
   .bg {
-    position: absolute;
+    position: fixed;
     inset: 0;
     background: rgba(0, 0, 0, 0.4);
     border: none;
@@ -86,7 +86,7 @@
   }
 
   form {
-    position: absolute;
+    position: fixed;
     bottom: 0;
     width: 100%;
     z-index: 2;

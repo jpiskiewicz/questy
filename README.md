@@ -26,10 +26,13 @@ to play around with.
 - [x] Login page frontend;
 - [x] Database for user data, quest info and session token lookup;
 - [x] Authorization API;
-- [ ] Quest creation, start and modification endpoints;
-- [ ] Some broadcast service which will use SSE to notify all connected clients for current user about changes to the task list;
-- [ ] Quest list;
-- [ ] Quest add / modify dialog boxes.
+- [ ] Quest creation and modification endpoints;
+- [x] Some broadcast service which will use SSE to notify all connected clients for current user about changes to the task list;
+- [x] Quest list;
+- [x] Quest add / modify dialog boxes;
+- [ ] Info about quest duration present in the list;
+- [ ] Quest start endpoint and action;
+- [ ] Quest finish action.
 
 ## Database initalization
 

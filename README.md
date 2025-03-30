@@ -31,8 +31,9 @@ to play around with.
 - [x] Quest list;
 - [x] Quest add / modify dialog boxes;
 - [ ] Info about quest duration present in the list;
-- [ ] Quest start endpoint and action;
-- [ ] Quest finish action.
+- [ ] Quest start action;
+- [ ] Quest finish action;
+- [ ] Quest delete button.
 
 ## Database initalization
 

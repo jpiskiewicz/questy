@@ -18,7 +18,7 @@ interface AuthenticatedActionResultFail {
 
 type AuthenticatedActionResult = AuthenticatedActionResultOk | AuthenticatedActionResultFail;
 
-class Db {
+export class Db {
   private streams = new InvalidationStreams();
   constructor(private conn: mysql.Connection) {}
 
@@ -117,6 +117,23 @@ class Db {
       INSERT INTO quests (user, type, title, description, duration)
         VALUES ("{user}", "${type}", "${title}", "${description}", ${this.getSeconds(time)});
       `
+    );
+    if (res.ok) this.streams.invalidate(res.user);
+    return res.ok;
+  }
+
+  async editQuest(
+    token: string,
+    type: QuestType,
+    title: string,
+    description: string,
+    time: string,
+    id: string
+  ): Promise<boolean> {
+    const res = await this.performAuthenticatedAction(
+      token,
+      `UPDATE quests SET type = "${type}", title = "${title}", description = "${description}", duration = ${this.getSeconds(time)}
+      WHERE id = ${id};`
     );
     if (res.ok) this.streams.invalidate(res.user);
     return res.ok;

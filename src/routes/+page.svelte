@@ -3,12 +3,14 @@
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   import QuestTile from "$lib/components/QuestTile.svelte";
-  import QuestCreateForm from "$lib/components/QuestCreateForm.svelte";
+  import QuestForm from "$lib/components/QuestForm.svelte";
 
   let { data } = $props();
 
   let sessionControlOpen = $state(false);
   let questCreateFormOpen = $state(false);
+  let questEditFormOpen = $state(false);
+  let editedQuest: number = $state(-1);
   let quests: Quest[] = $state([]);
   let sessionControlHolder: HTMLDivElement;
 
@@ -78,7 +80,13 @@
   <h2>Questy główne</h2>
   <div class="quests">
     {#each quests as quest}
-      <QuestTile {quest} />
+      <QuestTile
+        {quest}
+        onLongPress={(id: number) => {
+          editedQuest = id;
+          questEditFormOpen = true;
+        }}
+      />
     {/each}
   </div>
   <button class="fab" onclick={() => (questCreateFormOpen = true)} aria-label="create new quest">
@@ -91,7 +99,15 @@
   </button>
 </main>
 {#if questCreateFormOpen}
-  <QuestCreateForm bind:isOpened={questCreateFormOpen} />
+  <QuestForm title="Stwórz questa" action="?/createQuest" bind:isOpened={questCreateFormOpen} />
+{/if}
+{#if questEditFormOpen}
+  <QuestForm
+    title="Edytuj questa"
+    action="?/editQuest"
+    bind:isOpened={questEditFormOpen}
+    initialData={quests[editedQuest - 1]}
+  />
 {/if}
 
 <style lang="scss">

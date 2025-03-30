@@ -1,12 +1,23 @@
 <script lang="ts">
   import type { BlurParams, TransitionConfig } from "svelte/transition";
+  import type { Quest } from "$lib/types";
+  import { QuestType } from "$lib/types";
   import { sineInOut } from "svelte/easing";
   import { fade } from "svelte/transition";
+  import { onMount, onDestroy } from "svelte";
 
-  let { isOpened = $bindable() }: { isOpened: boolean } = $props();
+  let {
+    title,
+    action,
+    isOpened = $bindable(),
+    initialData = undefined
+  }: { title: string; action: string; isOpened: boolean; initialData?: Quest } = $props();
 
-  const questTypes = ["główny", "poboczny"];
-  let chosenQuestType = $state(questTypes[0]);
+  const questTypes = [
+    { id: QuestType.main, name: "główny" },
+    { id: QuestType.side, name: "poboczny" }
+  ];
+  let chosenQuestType = $state(initialData?.type || questTypes[0].id);
 
   const fadeFly = (
     node: HTMLElement,
@@ -23,9 +34,16 @@
     };
   };
 
-  $effect(() => {
-    document.body.style["overflow"] = isOpened ? "hidden" : "auto";
-  });
+  const padInteger = (n: number): string => ("0" + n).slice(-2);
+
+  const durationToString = (seconds: number | undefined): string => {
+    if (!seconds) return "";
+    const h = Math.floor(seconds / 3600);
+    return `${padInteger(h)}:${padInteger((seconds - h * 3600) / 60)}`;
+  };
+
+  onMount(() => (document.body.style["overflow"] = "hidden"));
+  onDestroy(() => (document.body.style["overflow"] = "auto"));
 </script>
 
 <button
@@ -34,34 +52,41 @@
   aria-label="dismiss"
   transition:fade={{ duration: 250 }}
 ></button>
-<form transition:fadeFly method="POST" action="?/createQuest">
-  <h2>Stwórz questa</h2>
+<form transition:fadeFly method="POST" {action}>
+  <h2>{title}</h2>
   <div class="inputs">
     <label>
       Typ questa
       <input type="hidden" name="type" value={chosenQuestType} required />
       <div class="segmented-control">
-        {#each questTypes as questType}
+        {#each questTypes as { id, name }}
           <button
             type="button"
-            class:selected={questType === chosenQuestType}
-            onclick={() => (chosenQuestType = questType)}>{questType}</button
+            class:selected={id === chosenQuestType}
+            onclick={() => (chosenQuestType = id)}>{name}</button
           >
         {/each}
       </div>
     </label>
     <label>
       Tytuł
-      <input name="title" minlength="1" maxlength="256" required />
+      <input name="title" minlength="1" maxlength="256" value={initialData?.title} required />
     </label>
     <label>
       Opis
-      <textarea name="description" rows="3"></textarea>
+      <textarea name="description" rows="3">{initialData?.description}</textarea>
     </label>
     <label>
       Budżet czasowy
-      <input type="time" name="time" min="00:01" required />
+      <input
+        type="time"
+        name="time"
+        min="00:01"
+        value={durationToString(initialData?.duration)}
+        required
+      />
     </label>
+    <input type="hidden" name="id" value={initialData?.id} />
   </div>
   <div class="button-holder">
     <button>Gotowe</button>

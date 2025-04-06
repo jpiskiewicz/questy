@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Quest } from "$lib/types";
+  import { durationToString } from "$lib/util";
 
   let { quest, onLongPress }: { quest: Quest; onLongPress: (id: number) => void } = $props();
 
@@ -19,6 +20,7 @@
   >
     <h3>{quest.title}</h3>
     <p>{quest.description}</p>
+    <p class="smol">Budżet czasowy: {durationToString(quest.duration, true)}</p>
   </button>
 </div>
 
@@ -45,6 +47,11 @@
 
     p {
       font-size: 1rem;
+      margin: 0;
+    }
+
+    .smol {
+      font-size: 0.75rem;
     }
   }
 </style>

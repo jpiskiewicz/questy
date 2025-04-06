@@ -5,6 +5,7 @@
   import { sineInOut } from "svelte/easing";
   import { fade } from "svelte/transition";
   import { onMount, onDestroy } from "svelte";
+  import { durationToString } from "$lib/util";
 
   let {
     title,
@@ -32,14 +33,6 @@
                opacity: ${Math.min(t * 1.5, 1)};
                pointer-events: none;`
     };
-  };
-
-  const padInteger = (n: number): string => ("0" + n).slice(-2);
-
-  const durationToString = (seconds: number | undefined): string => {
-    if (!seconds) return "";
-    const h = Math.floor(seconds / 3600);
-    return `${padInteger(h)}:${padInteger((seconds - h * 3600) / 60)}`;
   };
 
   onMount(() => (document.body.style["overflow"] = "hidden"));

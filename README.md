@@ -30,8 +30,9 @@ to play around with.
 - [x] Some broadcast service which will use SSE to notify all connected clients for current user about changes to the task list;
 - [x] Quest list;
 - [x] Quest add / modify dialog boxes;
-- [ ] Info about quest duration present in the list;
+- [x] Info about quest duration present in the list;
 - [ ] Quest start action;
+- [ ] Displaying two lists grouped by quest type;
 - [ ] Quest finish action;
 - [ ] Quest delete button.
 

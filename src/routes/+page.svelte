@@ -89,11 +89,15 @@
   <section>
     {@render questListing(
       "Questy główne",
-      quests.filter(({ type }) => type === QuestType.Main)
+      quests.filter(
+        ({ type, status }) => type === QuestType.Main && status !== QuestStatus.Finished
+      )
     )}
     {@render questListing(
       "Questy poboczne",
-      quests.filter(({ type }) => type === QuestType.Side)
+      quests.filter(
+        ({ type, status }) => type === QuestType.Side && status !== QuestStatus.Finished
+      )
     )}
     {@render questListing(
       "Zakończone",

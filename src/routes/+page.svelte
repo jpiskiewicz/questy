@@ -1,5 +1,6 @@
 <script lang="ts">
   import type { Quest } from "$lib/types";
+  import { QuestType, QuestStatus } from "$lib/types";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
   import QuestTile from "$lib/components/QuestTile.svelte";
@@ -60,6 +61,21 @@
   });
 </script>
 
+{#snippet questListing(name: string, quests: Quest[])}
+  <h2>{name}</h2>
+  <div class="quests">
+    {#each quests as quest}
+      <QuestTile
+        {quest}
+        onLongPress={(id: number) => {
+          editedQuest = id;
+          questEditFormOpen = true;
+        }}
+      />
+    {/each}
+  </div>
+{/snippet}
+
 <main>
   <button class="ghost" onclick={() => (sessionControlOpen = !sessionControlOpen)}>
     {data.username}
@@ -71,18 +87,18 @@
     <button class="dismiss" onclick={dismissSessionControl} aria-label="dissmiss button"> </button>
   {/if}
   <section>
-    <h2>Questy główne</h2>
-    <div class="quests">
-      {#each quests as quest}
-        <QuestTile
-          {quest}
-          onLongPress={(id: number) => {
-            editedQuest = id;
-            questEditFormOpen = true;
-          }}
-        />
-      {/each}
-    </div>
+    {@render questListing(
+      "Questy główne",
+      quests.filter(({ type }) => type === QuestType.Main)
+    )}
+    {@render questListing(
+      "Questy poboczne",
+      quests.filter(({ type }) => type === QuestType.Side)
+    )}
+    {@render questListing(
+      "Zakończone",
+      quests.filter(({ status }) => status === QuestStatus.Finished)
+    )}
     <button class="fab" onclick={() => (questCreateFormOpen = true)} aria-label="create new quest">
       <svg
         width="40"

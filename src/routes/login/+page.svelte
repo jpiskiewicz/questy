@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { slide } from "svelte/transition";
-
   let { form } = $props();
 
   let alert = $state(false);
@@ -13,10 +11,11 @@
 </script>
 
 <main>
-  <div class="alert {form?.success ? 'good' : 'bad'}" class:visible={alert}>
-    {form?.message}
+  <div class="alert-holder">
+    <div class="alert {form?.success ? 'good' : 'bad'}" class:visible={alert}>
+      {form?.message}
+    </div>
   </div>
-
   <h1>Dawaj, robimy z tego questa</h1>
   <form method="POST">
     <div class="fields">
@@ -46,12 +45,19 @@
     padding: 2rem 1rem;
   }
 
+  .alert-holder {
+    position: relative;
+  }
+
   .alert {
+    position: absolute;
+    top: 0;
+    transform: translateY(calc(0px - (2rem + 100%)));
     border: 1px solid $main;
     border-radius: 0.25rem;
     padding: 1rem 2rem;
     transition: transform 0.5s ease-out;
-    transform: translateY(calc(0px - (2rem + 100%)));
+    width: 100%;
   }
 
   .good {

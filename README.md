@@ -31,7 +31,7 @@ to play around with.
 - [x] Quest list;
 - [x] Quest add / modify dialog boxes;
 - [x] Info about quest duration present in the list;
-- [ ] Quest start action;
+- [x] Quest start action;
 - [ ] Displaying two lists grouped by quest type;
 - [ ] Quest finish action;
 - [ ] Quest delete button.

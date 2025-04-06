@@ -142,7 +142,8 @@ export class Db {
   async startQuest(token: string, id: string, endTime: string): Promise<boolean> {
     const res = await this.performAuthenticatedAction(
       token,
-      `UPDATE quests SET status = "started", end_time = FROM_UNIXTIME(${endTime}) WHERE id = ${id};`
+      `UPDATE quests SET status = "created" WHERE status = "started";
+      UPDATE quests SET status = "started", end_time = FROM_UNIXTIME(${endTime}) WHERE id = ${id};`
     );
     if (res.ok) this.streams.invalidate(res.user);
     return res.ok;

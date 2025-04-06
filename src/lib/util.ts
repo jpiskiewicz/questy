@@ -3,6 +3,6 @@ export const durationToString = (seconds: number | undefined, long = false): str
   if (!seconds) return "";
   const h = Math.floor(seconds / 3600);
   const min = (seconds - h * 3600) / 60;
-  if (long) return h + " h " + (min ? min + " min" : "");
+  if (long) return h + " h " + (min ? min.toFixed(0) + " min" : "");
   return `${padInteger(h)}:${padInteger(min)}`;
 };

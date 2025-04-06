@@ -46,9 +46,9 @@
     const handleInvalidation = async ({
       done
     }: ReadableStreamReadResult<Uint8Array>): Promise<void> => {
+      loadQuestList();
       if (!done) {
-        const res = await reader.read();
-        handleInvalidation(res);
+        handleInvalidation(await reader.read());
       }
     };
     handleInvalidation(await reader.read());

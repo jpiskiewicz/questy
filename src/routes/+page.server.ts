@@ -17,14 +17,14 @@ export const load: PageServerLoad = ({ locals, cookies }) => {
   };
 };
 
-enum QuestAction {
+enum FormAction {
   Create = "createQuest",
   Edit = "editQuest"
 }
 
-const performQuestAction = async (
+const performFormAction = async (
   db: Db,
-  action: QuestAction,
+  action: FormAction,
   token: string | undefined,
   data: FormData
 ): Promise<{ success: boolean }> => {
@@ -43,16 +43,16 @@ const performQuestAction = async (
 
 export const actions = {
   createQuest: async ({ request, locals, cookies }) =>
-    await performQuestAction(
+    await performFormAction(
       locals.db,
-      QuestAction.Create,
+      FormAction.Create,
       cookies.get("token"),
       await request.formData()
     ),
   editQuest: async ({ request, locals, cookies }) =>
-    await performQuestAction(
+    await performFormAction(
       locals.db,
-      QuestAction.Edit,
+      FormAction.Edit,
       cookies.get("token"),
       await request.formData()
     )

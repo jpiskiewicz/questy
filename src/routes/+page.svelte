@@ -12,10 +12,10 @@
   let questEditFormOpen = $state(false);
   let editedQuest: number = $state(-1);
   let quests: Quest[] = $state([]);
-  let sessionControl: HTMLDivElement;
+  let sessionControl: HTMLDivElement | undefined = $state();
 
   const dismissSessionControl = ({ target }: MouseEvent) => {
-    if (!sessionControl.contains(target as HTMLElement)) {
+    if (!sessionControl?.contains(target as HTMLElement)) {
       sessionControlOpen = false;
     }
   };

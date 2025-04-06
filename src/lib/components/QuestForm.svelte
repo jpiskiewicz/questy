@@ -15,8 +15,8 @@
   }: { title: string; action: string; isOpened: boolean; initialData?: Quest } = $props();
 
   const questTypes = [
-    { id: QuestType.main, name: "główny" },
-    { id: QuestType.side, name: "poboczny" }
+    { id: QuestType.Main, name: "główny" },
+    { id: QuestType.Side, name: "poboczny" }
   ];
   let chosenQuestType = $state(initialData?.type || questTypes[0].id);
 

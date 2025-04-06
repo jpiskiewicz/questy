@@ -17,21 +17,21 @@ export const load: PageServerLoad = ({ locals, cookies }) => {
   };
 };
 
-enum QuestAction {
+enum FormAction {
   Create = "createQuest",
   Edit = "editQuest"
 }
 
-const performQuestAction = async (
+const performFormAction = async (
   db: Db,
-  action: QuestAction,
+  action: FormAction,
   token: string | undefined,
   data: FormData
 ): Promise<{ success: boolean }> => {
   if (token === undefined) return redirect(302, "/login");
   const success = await db[action](
     token,
-    data.get("type") === QuestType.main ? QuestType.main : QuestType.side,
+    data.get("type") === QuestType.Main ? QuestType.Main : QuestType.Side,
     data.get("title") as string,
     data.get("description") as string,
     data.get("time") as string,
@@ -43,16 +43,16 @@ const performQuestAction = async (
 
 export const actions = {
   createQuest: async ({ request, locals, cookies }) =>
-    await performQuestAction(
+    await performFormAction(
       locals.db,
-      QuestAction.Create,
+      FormAction.Create,
       cookies.get("token"),
       await request.formData()
     ),
   editQuest: async ({ request, locals, cookies }) =>
-    await performQuestAction(
+    await performFormAction(
       locals.db,
-      QuestAction.Edit,
+      FormAction.Edit,
       cookies.get("token"),
       await request.formData()
     )

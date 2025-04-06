@@ -31,7 +31,7 @@ const performFormAction = async (
   if (token === undefined) return redirect(302, "/login");
   const success = await db[action](
     token,
-    data.get("type") === QuestType.main ? QuestType.main : QuestType.side,
+    data.get("type") === QuestType.Main ? QuestType.Main : QuestType.Side,
     data.get("title") as string,
     data.get("description") as string,
     data.get("time") as string,

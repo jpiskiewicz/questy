@@ -1,12 +1,12 @@
 export enum QuestType {
-  main = "main",
-  side = "side"
+  Main = "main",
+  Side = "side"
 }
 
-enum QuestStatus {
-  created = "created",
-  started = "started",
-  finished = "finished"
+export enum QuestStatus {
+  Created = "created",
+  Started = "started",
+  Finished = "finished"
 }
 
 export interface Quest {

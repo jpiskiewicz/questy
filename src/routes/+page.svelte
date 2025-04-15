@@ -127,7 +127,7 @@
     title="Edytuj questa"
     action="?/editQuest"
     bind:isOpened={questEditFormOpen}
-    initialData={quests[editedQuest - 1]}
+    initialData={quests.find(({ id }) => id === editedQuest)}
   />
 {/if}
 

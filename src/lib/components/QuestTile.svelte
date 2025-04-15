@@ -34,7 +34,7 @@
     onmousedown={() => {
       pressTimestamp = Date.now();
       longPressActionScheduled = true;
-      window.setTimeout(() => longPressActionScheduled && onLongPress(quest.id - 1), 500);
+      window.setTimeout(() => longPressActionScheduled && onLongPress(quest.id), 500);
     }}
     onmouseup={() => {
       if (Date.now() - pressTimestamp < 500) {

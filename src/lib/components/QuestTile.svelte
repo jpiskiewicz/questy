@@ -3,10 +3,12 @@
   import { QuestStatus } from "$lib/types";
   import { onMount, onDestroy } from "svelte";
   import { durationToString } from "$lib/util";
+  import { base } from "$app/paths";
 
   const start = () =>
     fetch(
-      "/api/quests/start?id=" +
+      base +
+        "/api/quests/start?id=" +
         quest.id +
         "&end_time=" +
         (Date.now() + quest.duration * 1000).toString().slice(0, 10),
@@ -58,7 +60,7 @@
   </button>
   {#if quest.status === QuestStatus.Started}
     <div class="end-button-holder">
-      <button onclick={() => fetch("/api/quests/end?id=" + quest.id, { method: "PATCH" })}>
+      <button onclick={() => fetch(base + "/api/quests/end?id=" + quest.id, { method: "PATCH" })}>
         Gotowe
       </button>
     </div>

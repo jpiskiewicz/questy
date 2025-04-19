@@ -2,11 +2,12 @@ import type { Actions, PageServerLoad } from "./$types";
 import type { Db } from "$lib/server/db";
 import { QuestType } from "$lib/types";
 import { redirect } from "@sveltejs/kit";
+import { base } from "$app/paths";
 
 export const load: PageServerLoad = ({ locals, cookies }) => {
   const token = cookies.get("token");
   if (token === undefined) {
-    return redirect(302, "/login");
+    return redirect(302, base + "/login");
   }
 
   const username = cookies.get("username");
@@ -28,7 +29,7 @@ const performFormAction = async (
   token: string | undefined,
   data: FormData
 ): Promise<{ success: boolean }> => {
-  if (token === undefined) return redirect(302, "/login");
+  if (token === undefined) return redirect(302, base + "/login");
   const success = await db[action](
     token,
     data.get("type") === QuestType.Main ? QuestType.Main : QuestType.Side,
@@ -37,7 +38,7 @@ const performFormAction = async (
     data.get("time") as string,
     data.get("id") as string
   );
-  if (!success) return redirect(302, "/login");
+  if (!success) return redirect(302, base + "/login");
   return { success };
 };
 

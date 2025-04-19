@@ -3,6 +3,7 @@
   import { QuestType, QuestStatus } from "$lib/types";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
+  import { base } from "$app/paths";
   import QuestTile from "$lib/components/QuestTile.svelte";
   import QuestForm from "$lib/components/QuestForm.svelte";
 
@@ -24,24 +25,24 @@
   const performAuthenticatedRequest = async (url: string): Promise<Response | null> => {
     try {
       const resp = await fetch(url);
-      if (!resp.ok) goto("/logout"); // Probably auth error
+      if (!resp.ok) goto(base + "/logout"); // Probably auth error
       return resp;
     } catch (err) {
       console.log(err);
-      goto("/logout");
+      goto(base + "/logout");
     }
     return null;
   };
 
   const loadQuestList = async () => {
-    const resp = await performAuthenticatedRequest("/api/quests");
+    const resp = await performAuthenticatedRequest(base + "/api/quests");
     if (resp) {
       quests = await resp.json();
     }
   };
 
   const startQuestInvalidationHandler = async () => {
-    const resp = await performAuthenticatedRequest("/api/stream");
+    const resp = await performAuthenticatedRequest(base + "/api/stream");
     if (!resp) return;
     const reader = resp.body!.getReader();
     const handleInvalidation = async ({
@@ -82,7 +83,7 @@
   </button>
   {#if sessionControlOpen}
     <div class="session-control" bind:this={sessionControl}>
-      <a href="/logout" class="minimal"> Wyloguj się </a>
+      <a href="{base}/logout" class="minimal"> Wyloguj się </a>
     </div>
     <button class="dismiss" onclick={dismissSessionControl} aria-label="dissmiss button"> </button>
   {/if}

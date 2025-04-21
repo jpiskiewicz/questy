@@ -11,8 +11,8 @@ export const actions = {
     if (!token) {
       return fail(400, { message: "Niepoprawne dane logowania" });
     }
-    cookies.set("token", token, { path: "/" });
-    cookies.set("username", <string>email, { path: "/" });
+    cookies.set("token", token, { path: base });
+    cookies.set("username", <string>email, { path: base });
 
     return redirect(302, base);
   },

@@ -9,13 +9,7 @@ export const load: PageServerLoad = ({ locals, cookies }) => {
   if (token === undefined) {
     return redirect(302, base + "/login");
   }
-
-  const username = cookies.get("username");
-
-  return {
-    username,
-    invalidationStream: locals.db.getStream(username)
-  };
+  return { username: cookies.get("username") };
 };
 
 enum FormAction {

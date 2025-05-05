@@ -9,5 +9,14 @@ export default defineConfig({
         api: "modern"
       }
     }
+  },
+  server: {
+    proxy: {
+      "/questy/api2": {
+        target: "http://127.0.0.1:3333",
+        rewrite: path => path.replace("/questy/api2", "/api"),
+        ws: true
+      }
+    }
   }
 });

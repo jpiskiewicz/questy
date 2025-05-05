@@ -3,16 +3,16 @@ import { fail, redirect } from "@sveltejs/kit";
 import { base } from "$app/paths";
 
 export const actions = {
-  login: async ({ request, locals, cookies }) => {
-    const data = await request.formData();
-    const [email, password] = [data.get("email"), data.get("password")];
-    const db = locals.db;
-    const token = await db.login(email, password);
-    if (!token) {
-      return fail(400, { message: "Niepoprawne dane logowania" });
+  login: async ({ request, cookies, fetch }) => {
+    const body = await request.formData();
+    const resp = await fetch(base + "/api2/login", { method: "POST", body });
+    if (!resp.ok) {
+      return fail(401, { message: "Niepoprawne dane logowania" });
     }
-    cookies.set("token", token, { path: base });
-    cookies.set("username", <string>email, { path: base });
+    const json = await resp.json();
+    console.log(json);
+    cookies.set("token", json.token, { path: base });
+    cookies.set("username", json.username, { path: base });
 
     return redirect(302, base);
   },

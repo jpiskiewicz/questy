@@ -22,43 +22,11 @@
     }
   };
 
-  const performAuthenticatedRequest = async (url: string): Promise<Response | null> => {
-    try {
-      const resp = await fetch(url);
-      if (!resp.ok) goto(base + "/logout"); // Probably auth error
-      return resp;
-    } catch (err) {
-      console.log(err);
-      goto(base + "/logout");
-    }
-    return null;
-  };
-
-  const loadQuestList = async () => {
-    const resp = await performAuthenticatedRequest(base + "/api/quests");
-    if (resp) {
-      quests = await resp.json();
-    }
-  };
-
-  const startQuestInvalidationHandler = async () => {
-    const resp = await performAuthenticatedRequest(base + "/api/stream");
-    if (!resp) return;
-    const reader = resp.body!.getReader();
-    const handleInvalidation = async ({
-      done
-    }: ReadableStreamReadResult<Uint8Array>): Promise<void> => {
-      loadQuestList();
-      if (!done) {
-        handleInvalidation(await reader.read());
-      }
-    };
-    handleInvalidation(await reader.read());
-  };
-
   onMount(() => {
-    loadQuestList();
-    startQuestInvalidationHandler();
+    onMount(() => {
+      const ws = new WebSocket(base + "/api2/quests");
+      ws.onmessage = (e: MessageEvent) => (quests = JSON.parse(e.data));
+    });
   });
 </script>
 

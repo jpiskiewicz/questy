@@ -36,14 +36,20 @@ const performFormAction = async (
   return { success };
 };
 
+const getSeconds = (duration: string): number => {
+  const [hours, minutes] = duration.split(":").map(v => parseInt(v));
+  return hours * 3600 + minutes * 60;
+};
+
 export const actions = {
-  createQuest: async ({ request, locals, cookies }) =>
-    await performFormAction(
-      locals.db,
-      FormAction.Create,
-      cookies.get("token"),
-      await request.formData()
-    ),
+  createQuest: async ({ request, cookies, fetch }) => {
+    const token = cookies.get("token");
+    if (!token) return redirect(302, base + "/login");
+    const body = await request.formData();
+    body.set("token", token);
+    const resp = await fetch(base + "/api2/quests", { method: "POST", body });
+    return { success: resp.ok };
+  },
   editQuest: async ({ request, locals, cookies }) =>
     await performFormAction(
       locals.db,

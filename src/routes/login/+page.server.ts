@@ -10,10 +10,8 @@ export const actions = {
       return fail(401, { message: "Niepoprawne dane logowania" });
     }
     const json = await resp.json();
-    console.log(json);
-    cookies.set("token", json.token, { path: base });
-    cookies.set("username", json.username, { path: base });
-
+    cookies.set("token", json.token, { path: "/" });
+    cookies.set("username", json.username, { path: "/" });
     return redirect(302, base);
   },
   register: async ({ request, locals }) => {

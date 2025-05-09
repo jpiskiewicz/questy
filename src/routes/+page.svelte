@@ -2,7 +2,6 @@
   import type { Quest } from "$lib/types";
   import { QuestType, QuestStatus } from "$lib/types";
   import { onMount } from "svelte";
-  import { goto } from "$app/navigation";
   import { base } from "$app/paths";
   import QuestTile from "$lib/components/QuestTile.svelte";
   import QuestForm from "$lib/components/QuestForm.svelte";

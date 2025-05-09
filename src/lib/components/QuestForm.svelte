@@ -6,13 +6,19 @@
   import { fade } from "svelte/transition";
   import { onMount, onDestroy } from "svelte";
   import { durationToString } from "$lib/util";
+  import { enhance } from "$app/forms";
 
   let {
     title,
     action,
     isOpened = $bindable(),
     initialData = undefined
-  }: { title: string; action: string; isOpened: boolean; initialData?: Quest } = $props();
+  }: {
+    title: string;
+    action: string;
+    isOpened: boolean;
+    initialData?: Quest;
+  } = $props();
 
   const questTypes = [
     { id: QuestType.Main, name: "główny" },
@@ -45,7 +51,7 @@
   aria-label="dismiss"
   transition:fade={{ duration: 250 }}
 ></button>
-<form transition:fadeFly method="POST" {action}>
+<form transition:fadeFly method="POST" use:enhance onsubmit={() => (isOpened = false)} {action}>
   <h2>{title}</h2>
   <div class="inputs">
     <label>

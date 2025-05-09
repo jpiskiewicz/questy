@@ -36,9 +36,9 @@ const performFormAction = async (
   return { success };
 };
 
-const getSeconds = (duration: string): number => {
+const getSeconds = (duration: string): string => {
   const [hours, minutes] = duration.split(":").map(v => parseInt(v));
-  return hours * 3600 + minutes * 60;
+  return (hours * 3600 + minutes * 60).toString();
 };
 
 export const actions = {
@@ -46,6 +46,7 @@ export const actions = {
     const token = cookies.get("token");
     if (!token) return redirect(302, base + "/login");
     const body = await request.formData();
+    body.set("time", getSeconds(body.get("time") as string));
     body.set("token", token);
     const resp = await fetch(base + "/api2/quests", { method: "POST", body });
     return { success: resp.ok };

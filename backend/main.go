@@ -32,9 +32,27 @@ type Quest struct {
 	EndTime     *time.Time `json:"end_time"`
 }
 
+type Broadcaster struct {
+	chans []*chan int
+}
+
+func (b *Broadcaster) Subscribe(c *chan int) {
+	b.chans = append(b.chans, c)
+}
+
+func (b Broadcaster) Broadcast() {
+	for i := range b.chans {
+		*(b.chans[i]) <- 1
+	}
+}
+
+func newBroadcaster() *Broadcaster {
+	return &Broadcaster{make([]*chan int, 0)}
+}
+
 type Api struct {
-	db     *sql.DB
-	update map[string]chan int
+	db           *sql.DB
+	broadcasters map[string]*Broadcaster
 }
 
 func (a Api) authorizeUser(token string) (username string) {
@@ -64,28 +82,36 @@ func (a Api) quests(user string) websocket.Handler {
 	return websocket.Handler(func(ws *websocket.Conn) {
 		defer ws.Close()
 		log.Println("Connection to /api/quests estabilished.")
-		a.update[user] <- 1
-		select {
-		case <-a.update[user]:
-			qs, err := a.getQuests(user)
-			if err != nil {
-				log.Println(err.Error())
-				log.Printf("Couldn't get quest list for user \"%s\". Most likely the token has expired.", user)
-				ws.Close()
-			}
-			j, err := json.Marshal(qs)
-			if err != nil {
-				log.Printf("Couldn't marshall quest list into JSON for user \"%s\".", user)
-				ws.Close()
-			}
-
-			if _, err := ws.Write(j); err != nil {
-				if errors.Is(err, syscall.EPIPE) {
-					log.Println("Broken connection with client.")
+		_, ok := a.broadcasters[user]
+		if !ok {
+			a.broadcasters[user] = newBroadcaster()
+		}
+		update := make(chan int, 1)
+		a.broadcasters[user].Subscribe(&update)
+		a.broadcasters[user].Broadcast()
+		for {
+			select {
+			case <-update:
+				qs, err := a.getQuests(user)
+				if err != nil {
+					log.Println(err.Error())
+					log.Printf("Couldn't get quest list for user \"%s\". Most likely the token has expired.", user)
 					ws.Close()
-					return
-				} else {
-					log.Fatal(err)
+				}
+				j, err := json.Marshal(qs)
+				if err != nil {
+					log.Printf("Couldn't marshall quest list into JSON for user \"%s\".", user)
+					ws.Close()
+				}
+
+				if _, err := ws.Write(j); err != nil {
+					if errors.Is(err, syscall.EPIPE) {
+						log.Println("Broken connection with client.")
+						ws.Close()
+						return
+					} else {
+						log.Fatal(err)
+					}
 				}
 			}
 		}
@@ -142,7 +168,6 @@ func (a Api) Login() http.Handler {
 		if err != nil {
 			log.Fatal("Error during json.Marshall on LoginResponse.")
 		}
-		a.update[username] = make(chan int, 1)
 		w.Write(body)
 	})
 }
@@ -180,7 +205,6 @@ func (a Api) NewQuest() http.Handler {
 		if q == (Quest{}) {
 			return
 		}
-		log.Println(q.Id)
 		if _, err := a.db.Exec("INSERT INTO quests (user, type, title, description, duration) VALUES (?, ?, ?, ?, ?)", user, q.Type, q.Title, q.Description, q.Duration); err != nil {
 			msg := "Couldn't insert quest data into DB."
 			log.Println(msg, err)
@@ -188,7 +212,7 @@ func (a Api) NewQuest() http.Handler {
 			return
 		}
 		w.WriteHeader(200)
-		a.update[user] <- 1 // Channel here could potentially end up being nil but for the sake of simplicity we'll let it raise a panic.
+		a.broadcasters[user].Broadcast()
 	})
 }
 
@@ -205,7 +229,7 @@ func (a Api) UpdateQuest() http.Handler {
 			return
 		}
 		w.WriteHeader(200)
-		a.update[user] <- 1 // Channel here could potentially end up being nil but for the sake of simplicity we'll let it raise a panic.
+		a.broadcasters[user].Broadcast()
 	})
 }
 
@@ -222,7 +246,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	api := Api{db, make(map[string]chan int)}
+	api := Api{db, make(map[string]*Broadcaster)}
 
 	pingErr := db.Ping()
 	if pingErr != nil {
